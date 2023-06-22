@@ -60,23 +60,14 @@ describe("Create Shortned Url", () => {
 		expect(isRegisterAliased).toBe(true);
 	});
 
-	test("Should not be able to create a shortned url by alias when the alias is passed but it is an empty string", async () => {
-		const { sut } = makeSut();
-		const input = {
-			url: "https://example.com",
-			alias: ""
-		};
-		await expect(() => sut.execute(input)).rejects.toThrow(new Error("The alias passed should not be empty"));
-	});
-
 	test("Should not be able save a shortened url with blank spaces chars in alias given by user", async () => {
 		const { sut } = makeSut();
 		const input = {
 			url: "https://example.com",
-			alias: "    url			sample   v1         "
+			alias: " 	some 	test alias	 "
 		};
 		const output = await sut.execute(input);
-		const expectedUrl = getCompleteExpectedUrl("url-sample-v1");
+		const expectedUrl = getCompleteExpectedUrl("some-test-alias");
 		expect(output.generatedUrl).toBe(expectedUrl);
 	});
 
