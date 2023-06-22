@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { URLHash } from "./url-hash";
+import { Alias } from "./alias";
 
 export class ShortnedURL {
   private content: string;
@@ -8,7 +9,7 @@ export class ShortnedURL {
   private BASE_URL = process.env.BASE_URL;
   private readonly EXPIRATION_TIME_DURATION = 30;
 
-  constructor(private readonly originalUrl: string, private alias?: string) {
+  constructor(private readonly originalUrl: string, private alias: Alias) {
     this.validate();
     this.content = this.getNewUrl();
     this.createdAt = new Date();
@@ -16,12 +17,11 @@ export class ShortnedURL {
   }
 
   private getNewUrl() {
-    if(!this.alias) {
+    if(this.alias.isEmpty()) {
       const hash = new URLHash(this.originalUrl);
       return this.normalizeGeneratedUrl(hash.getContent());
     }
-    this.alias = this.alias.trim().replace(/\s+/g, '-');
-    return this.normalizeGeneratedUrl(this.alias);
+    return this.normalizeGeneratedUrl(this.alias.getContent());
   };
 
   private normalizeGeneratedUrl(urlHash: string) {
@@ -30,16 +30,6 @@ export class ShortnedURL {
 
   private validate() {
     if(!this.originalUrl) throw new Error("The url should not be empty");
-    if(this.isAliasAnEmptyString()) throw new Error("The alias passed should not be empty");
-    if(this.isAliasLengthInvalid()) throw new Error("Alias should not be bigger than 20 characters");
-  }
-
-  private isAliasAnEmptyString() {
-    return typeof this.alias === "string" && this.alias.length === 0;
-  }
-
-  private isAliasLengthInvalid() {
-    return this.alias && this.alias.length > 20;
   }
 
   private setExpirationDate() {
